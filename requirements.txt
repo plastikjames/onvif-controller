@@ -1,0 +1,4 @@
+evdev>=1.6
+onvif-zeep>=0.2.12
+PyYAML>=6.0
+requests>=2.25

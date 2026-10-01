@@ -1,0 +1,15 @@
+# Real configs hold camera and Nx passwords; commit config.example.yaml instead
+config.yaml
+config-*.yaml
+!config.example.yaml
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store

@@ -1,0 +1,3 @@
+# Let the 'input' group read/write 3Dconnexion devices (LED control needs write)
+SUBSYSTEM=="input", ATTRS{idVendor}=="256f", MODE="0660", GROUP="input"
+SUBSYSTEM=="input", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c6*", MODE="0660", GROUP="input"

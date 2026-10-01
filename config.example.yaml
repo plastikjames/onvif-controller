@@ -1,0 +1,76 @@
+# /etc/onvif-spacemouse/config.yaml  (chmod 600 - contains camera passwords)
+
+cameras:
+  - name: Stage
+    host: 192.168.1.101
+    port: 80
+    user: admin
+    password: changeme
+    # profile: Profile_1        # media profile token or name; default = first with PTZ
+    # zoom: false               # set for pan/tilt-only heads
+    # adjust_time: true         # default; compensates for camera clock/timezone offset in WS-Security auth
+    presets: [Wide, Lectern, Audience, Screen]
+    # locked: [Wide]            # can be recalled but not overwritten from the SpaceMouse
+    # home: Wide                # recalled automatically after home_after seconds without SpaceMouse input
+    # home_after: 120
+  - name: Rear
+    host: 192.168.1.102
+    user: admin
+    password: changeme
+    presets: [Wide, Stage]
+
+# Everything below is optional; values shown are the defaults.
+# device:
+#   name: SpaceMouse            # substring of the input device name
+#   path: null                  # or force e.g. /dev/input/by-id/usb-3Dconnexion_SpaceMouse_Compact-event-if00
+#   full_scale: 350
+#   stale_timeout: 1.0          # zero all axes if no input for this long
+#   led_feedback: true          # blink N times = camera/preset N
+#
+# axes:                         # axis: x y z rx ry rz  (run --test-input to check)
+#   pan:  [{axis: x, invert: false}, {axis: ry, invert: true}]   # slide or rock left/right
+#   tilt: [{axis: y, invert: true},  {axis: rx, invert: true}]   # slide or rock fwd/back
+#   zoom: [{axis: rz, invert: false}]                            # twist clockwise = zoom in
+#   # optional per-source "scale: 1.5" to make one source more sensitive
+#
+# control:
+#   deadzone: 0.12
+#   curve: 2.0                  # >1 gives finer control near centre
+#   max_speed: 1.0
+#   separate_zoom: true         # ignore twist while sliding and vice versa
+#   axis_lock: 0.5              # pure pan or tilt unless clearly diagonal (0 = off)
+#   step: 0.05
+#   min_interval: 0.1
+#   move_timeout: 1.0           # 0 disables the ONVIF Timeout field
+#   long_press: 0.8
+#   save_hold: 2.0              # save_preset needs a longer hold
+#
+# buttons:                      # actions: prev_camera next_camera prev_preset next_preset save_preset next_layout prev_layout none
+#   left:  {short: prev_preset, long: none}
+#   right: {short: next_preset, long: save_preset}
+#
+# overlay:                      # burn the preset name into the video (all streams of that camera)
+#   enabled: false
+#   seconds: 10
+#   position: UpperLeft         # UpperLeft UpperRight LowerLeft LowerRight Center, or [x, y] in -1..1
+#   font_size: null             # camera default if unset
+#   rest_position: null         # e.g. [-0.9, -0.82]: after `seconds`, keep the last preset's name
+#                               #   here instead of removing it (same position syntax)
+#   rest_font_size: null        # default: same as font_size
+#
+# pedal:                        # keyboard-type USB foot pedal, one key per pedal
+#   name: FootSwitch            # substring of the device name (--list-devices shows them)
+#   path: null
+#   keys:                       # key -> preset name (active camera) or a button action
+#     KEY_1: Lectern
+#     KEY_2: Audience
+#     KEY_3: Screen
+#   long_press_save: true       # hold (control.save_hold) saves the current position to that preset
+#
+# nx:                           # Nx Witness layout cycling via Generic Events (map next_layout to a button)
+#   url: https://nx-server:7001
+#   user: spacemouse
+#   password: changeme
+#   verify_tls: false           # Nx uses a self-signed certificate by default
+#   source: SpaceMouse          # Generic Event source the Nx rules match on
+#   layouts: [Overview, Stage, Audience]   # sent as the event caption, in cycle order

@@ -1,0 +1,19 @@
+[Unit]
+Description=ONVIF PTZ control via 3Dconnexion SpaceMouse
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=onvif-spacemouse
+Group=input
+ExecStart=/opt/onvif-spacemouse/.venv/bin/python /opt/onvif-spacemouse/onvif_spacemouse.py -c /etc/onvif-spacemouse/config.yaml
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
