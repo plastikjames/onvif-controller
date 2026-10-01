@@ -55,6 +55,7 @@ If a direction is backwards, flip `invert` for that axis in `axes:`.
 ## Install as a service
 
 ```bash
+sudo apt install -y build-essential python3-dev python3-venv   # evdev is compiled during pip install
 sudo useradd --system --no-create-home --groups input onvif-spacemouse
 sudo mkdir -p /opt/onvif-spacemouse /etc/onvif-spacemouse
 sudo cp onvif_spacemouse.py requirements.txt /opt/onvif-spacemouse/
