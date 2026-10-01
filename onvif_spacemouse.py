@@ -343,6 +343,7 @@ class NxWitness(threading.Thread):
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.token = None
         self.digest = False      # pre-5.0 servers have no session login
+        self.legacy_api = False  # pre-6.0 servers only have /api/createEvent
 
     def run(self):
         while not self.stop.is_set():
@@ -367,7 +368,7 @@ class NxWitness(threading.Thread):
         r = self.http.post(self.cfg["url"] + "/rest/v1/login/sessions", timeout=5,
                            json={"username": self.cfg["user"], "password": self.cfg["password"]})
         if r.status_code == 404:
-            self.digest = True
+            self.digest = self.legacy_api = True
             self.http.auth = requests.auth.HTTPDigestAuth(self.cfg["user"], self.cfg["password"])
             return
         r.raise_for_status()
@@ -375,15 +376,23 @@ class NxWitness(threading.Thread):
         self.http.headers["Authorization"] = "Bearer " + self.token
 
     def send_event(self, caption):
-        params = {"source": self.cfg["source"], "caption": caption}
+        event = {"source": self.cfg["source"], "caption": caption}
         for attempt in (1, 2):
             if not self.token and not self.digest:
                 self.login()
-            r = self.http.get(self.cfg["url"] + "/api/createEvent", params=params, timeout=5)
+            if self.legacy_api:
+                r = self.http.get(self.cfg["url"] + "/api/createEvent", params=event, timeout=5)
+            else:   # Nx 6+: the /api/ endpoints are disabled by default (403)
+                r = self.http.post(self.cfg["url"] + "/rest/v4/events/generic",
+                                   json=dict(event, state="instant"), timeout=5)
+                if r.status_code == 404:   # pre-6.0 server
+                    self.legacy_api = True
+                    return self.send_event(caption)
             if r.status_code == 401 and attempt == 1 and not self.digest:
                 self.token = None   # session expired: log in again
                 continue
-            r.raise_for_status()
+            if not r.ok:
+                raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]}")
             return
 
 
